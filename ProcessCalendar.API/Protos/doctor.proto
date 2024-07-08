@@ -13,10 +13,10 @@ message Empty {
 
 // The response message containing the greetings.
 message GetListDoctorResponse {
-  repeated Doctor doctor = 1;
+  repeated DoctorInfo doctor = 1;
 }
 
-message Doctor {
+message DoctorInfo {
 	int32 id = 1;
 	string name = 2;
 	string description = 3;

@@ -13,7 +13,7 @@ namespace ProcessCalendar.API.Services
             var data = await respos.GetListDoctorAsync();
 
             if (data == null) {
-                return data;
+                return MapToCustomerBasketResponse(data);
             }
             return new();
         }
@@ -21,16 +21,21 @@ namespace ProcessCalendar.API.Services
         private static GetListDoctorResponse MapToCustomerBasketResponse(List<DoctorModel> doctorModels)
         {
             var response = new GetListDoctorResponse();
+            if (doctorModels != null) {
 
-            foreach (var item in doctorModels)
-            {
-                response.Add(new Doctor()
+                foreach (DoctorModel item in doctorModels)
                 {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Description = item.Description,
-                });
+                    if (item != null) { 
+                        response.Add(new DoctorInfo()
+                        {
+                            Id = item.Id,
+                            Name = item.Name,
+                            Description = item?.Description,
+                        });
+                    }
+                }
             }
+            
 
             return response;
         }
