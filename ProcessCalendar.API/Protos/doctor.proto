@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option csharp_namespace = "ProcessCalendar.API";
+
+service doctor {
+  // Sends a greeting
+  rpc GetListDoctor (Empty) returns (GetListDoctorResponse);
+}
+
+// The request message containing the user's name.
+message Empty {
+}
+
+// The response message containing the greetings.
+message GetListDoctorResponse {
+  repeated Doctor doctor = 1;
+}
+
+message Doctor {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+}
+
