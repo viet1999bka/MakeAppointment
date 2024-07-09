@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,7 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.63.0" />
+    <PackageReference Include="Grpc.Net.Client.Web" Version="2.63.0" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.63.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\MakeAppointment.ServiceDefaults\MakeAppointment.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\Appointment\Protos\appointment.proto" GrpcServices="Client">
+      <Link>Protos\appointment.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\ProcessCalendar.API\Protos\doctor.proto" GrpcServices="Client">
+      <Link>Protos\doctor.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
 </Project>

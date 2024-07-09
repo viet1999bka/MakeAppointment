@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Common.Models;
+using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using ProcessCalendar.API.Model;
 using ProcessCalendar.API.Repositories;
@@ -12,7 +13,7 @@ namespace ProcessCalendar.API.Services
         {
             var data = await respos.GetListDoctorAsync();
 
-            if (data == null) {
+            if (data is not null) {
                 return MapToCustomerBasketResponse(data);
             }
             return new();
@@ -26,7 +27,7 @@ namespace ProcessCalendar.API.Services
                 foreach (DoctorModel item in doctorModels)
                 {
                     if (item != null) { 
-                        response.Add(new DoctorInfo()
+                        response.DoctorInfo.Add(new DoctorInfo()
                         {
                             Id = item.Id,
                             Name = item.Name,
@@ -35,8 +36,6 @@ namespace ProcessCalendar.API.Services
                     }
                 }
             }
-            
-
             return response;
         }
     }

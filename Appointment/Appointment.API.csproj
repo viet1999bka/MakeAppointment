@@ -7,14 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Protos\appointment.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\appointment.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
+	<PackageReference Include="Grpc.AspNetCore.Web" Version="2.63.0" />
+    <PackageReference Include="MassTransit" Version="8.2.3" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\MakeAppointment.ServiceDefaults\MakeAppointment.ServiceDefaults.csproj" />
   </ItemGroup>
 

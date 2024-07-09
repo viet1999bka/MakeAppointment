@@ -1,4 +1,5 @@
-﻿using ProcessCalendar.API.Model;
+﻿using Common.Models;
+using ProcessCalendar.API.Model;
 
 namespace ProcessCalendar.API.Repositories
 {

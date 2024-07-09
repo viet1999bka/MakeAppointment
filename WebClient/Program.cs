@@ -1,3 +1,6 @@
+using Appointment.API.Protos;
+using Grpc.Net.Client.Web;
+using ProcessCalendar.API;
 using WebClient.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +10,9 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddGrpcClient<doctor.doctorClient>(option => option.Address = new Uri("http://localhost:5048")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
+builder.Services.AddGrpcClient<AppointmentBookingApi.AppointmentBookingApiClient>(option => option.Address = new Uri("http://localhost:5197")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
 
 var app = builder.Build();
 

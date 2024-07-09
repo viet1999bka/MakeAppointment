@@ -1,4 +1,4 @@
-﻿namespace ProcessCalendar.API.Model
+﻿namespace Common.Models
 {
     public class DoctorModel
     {

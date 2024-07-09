@@ -10,5 +10,7 @@ namespace ProcessCalendar.API.Model
         }
 
         public DbSet<DoctorItem> Doctors { get; set; }
+        public DbSet<AppointmentItem> AppointmentItems { get; set; }
+        public DbSet<UserAppointInfor> UserAppointInfors { get; set; }
     }
 }

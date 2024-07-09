@@ -1,0 +1,19 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "Appointment.API.Protos";
+
+service AppointmentBookingApi {
+	rpc SetAppointmentBooking (SetAppointInfor) returns (SetAppointResponse){}
+}
+
+message SetAppointInfor {
+	int32 selectedId = 1;
+	string namePatient = 2;
+	string description = 3;
+	string selectedDate = 4;
+	string optionDate = 5;
+}
+
+message SetAppointResponse {
+	int32 response = 1;
+}

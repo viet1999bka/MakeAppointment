@@ -1,6 +1,51 @@
 ﻿@page "/doctor"
+@rendermode InteractiveServer
+@using ProcessCalendar.API
+@inject doctor.doctorClient client
+@inject NavigationManager NavigationManager
 <h3>Doctor</h3>
+<section id="booking" class="section-padding">
+    @if (doctors == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Mô tả</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var forecast in doctors)
+                {
+                    <tr>
+                        <td>@forecast.Name</td>
+                        <td>@forecast.Description</td>
+                        <td>
+                            <div class="form-group">
+                                <button class="btn btn-submit" @onclick="SubmitClicked">Submit</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
 
 @code {
+    private IList<DoctorInfo> doctors;
 
+    protected override async Task OnInitializedAsync()
+    {
+        doctors = (await client.GetListDoctorAsync(new Empty())).DoctorInfo;
+    }
+    private void SubmitClicked()
+    {
+        NavigationManager.NavigateTo("./regisAppoint");
+    }
 }

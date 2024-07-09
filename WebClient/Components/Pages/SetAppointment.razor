@@ -1,0 +1,107 @@
+﻿@page "/regisAppoint"
+@rendermode InteractiveServer
+@using Appointment.API.Protos
+@using Common.Models
+@using ProcessCalendar.API
+@using System.Text.Json
+@inject doctor.doctorClient clientDoctor
+@inject AppointmentBookingApi.AppointmentBookingApiClient clientAppointBook
+@inject IJSRuntime JsRuntime
+
+<section id="booking" class="section-padding">
+    <h2 align="center">Đặt lịch khám với bác sĩ</h2>
+    <hr />
+    <div class="form-group">
+        <label>Bác sĩ</label>
+        <select class="form-control" @onchange="SelectedConsultantChanged">
+            <option selected disabled value="-1">--Chọn bác sĩ--</option>
+            @foreach (var consultant in doctors)
+            {
+                <option value="@consultant.Id">@consultant.Name</option>
+            }
+        </select>
+    </div>
+    <br />
+    <div class="form-group">
+        <label>Tên bệnh nhân:</label>
+        <InputText class="form-control" @bind-Value="_appointment.NamePatients"></InputText>
+    </div>
+    <br />
+    <div class="form-group">
+        <label>
+            Tình trạng, triệu chứng:
+        </label>
+        <InputTextArea class="form-control" @bind-Value="_appointment.DescribeSymptoms"></InputTextArea>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-6">
+            <label>
+                Ngày hẹn
+            </label>
+            <InputDate class="form-control" @bind-Value="_appointment!.SelectedDate"> </InputDate>
+        </div>
+        <div class="col-6">
+            <label>
+                Ngày hẹn dự phòng
+            </label>
+            <InputDate class="form-control" @bind-Value="_appointment!.OptionDate1"></InputDate>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+    <div class="form-group align-content-center">
+        <button class="btn btn-submit btn-primary" @onclick="SubmitClicked">Submit</button>
+    </div>
+</section>
+
+@code {
+    private AppointmentModel _appointment = new AppointmentModel();
+    private IList<DoctorInfo> doctors = new List<DoctorInfo>();
+
+    private string name;
+
+    protected override async Task OnInitializedAsync()
+    {
+        doctors = (await clientDoctor.GetListDoctorAsync(new Empty())).DoctorInfo;
+        if(doctors is not null) {
+            _appointment.Consultants.Clear();
+            foreach(var item in doctors)
+            {
+                _appointment.Consultants.Add(new DoctorModel
+                    {
+                        Id = item.Id,
+                        Name = item.Name,
+                        Description = item.Description,
+                    });
+            }
+        }
+    }
+    private async Task SelectedConsultantChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int consultantId))
+        {
+            _appointment.SelectedConsultantId = consultantId;
+        }
+    }
+    private async Task SubmitClicked()
+    {
+        var sendInput = new SetAppointInfor
+        {
+            SelectedId = _appointment.SelectedConsultantId,
+            NamePatient = _appointment.NamePatients,
+            Description = _appointment.DescribeSymptoms,
+            SelectedDate = _appointment.SelectedDate.ToString(),
+            OptionDate = _appointment.OptionDate1.ToString()
+        };
+
+        var respone = (await clientAppointBook.SetAppointmentBookingAsync(sendInput)).Response;
+        if(respone == 1)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Warning!"); // Alert
+            bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Bạn đã gửi thành công"); // Confirm
+            _appointment = new AppointmentModel();
+        }
+    }
+}
