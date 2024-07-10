@@ -2,6 +2,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ProcessCalendar.API.Model;
+using System.Text;
+using System.Text.Json;
 
 namespace ProcessCalendar.API.UseCases.Event
 {
@@ -28,44 +30,57 @@ namespace ProcessCalendar.API.UseCases.Event
 
                 DateTime selectDate = DateTime.Parse(request.SelectedDate);
                 DateTime optDate = DateTime.Parse(request.OptionDate);
-                var userInf = await _context.UserAppointInfors.AddAsync(new UserAppointInfor
-                {
-                    DoctorName = doctor.Name,
-                    PatientName = request.NamePatient,
-                    Status = "Đăng ký thành công",
-                    Note = "Đang tiếp nhận",
-                    SelectedDate = selectDate,
-                    OptionDate = optDate,
-                });
-                await _context.SaveChangesAsync();
                 await Task.Delay(10000);
                 var validSelected = await _context.AppointmentItems.FirstOrDefaultAsync(x => x.DoctorId == request.SelectedDoctorId && x.SetDate == selectDate);
                 var validOption = await _context.AppointmentItems.FirstOrDefaultAsync(x => x.DoctorId == request.SelectedDoctorId && x.SetDate == optDate);
                if (validSelected != null && validOption != null)
                 {
-                    userInf.Entity.Status = "Không thành công";
-                    userInf.Entity.Note = "Bác sĩ đã có hẹn vào khoảng thời gian đã chọn";
-                    _context.UserAppointInfors.Update(userInf.Entity);
-                    _context.SaveChanges();
+                    var status = "Không thành công";
+                    var ote = "Bác sĩ đã có hẹn vào khoảng thời gian đã chọn";
+                    // gửi lại cho appoint để update service
                 }
                 else
                 {
                     Random rnd = new Random();
                     int val = rnd.Next(1, 3);
+                    val = 2;
                     if (val == 1)
                     {
-                        userInf.Entity.Status = "Đã đăng ký";
-                        userInf.Entity.Note = "Đang tiếp nhận";
-                        _context.UserAppointInfors.Update(userInf.Entity);
-                        _context.SaveChanges();
+                        //userInf.Entity.Status = "Đã đăng ký";
+                        //userInf.Entity.Note = "Đang tiếp nhận";
+                        // gửi lại cho appoint để update service
                     }
                     else
                     {
-                        userInf.Entity.Status = "Thành công";
-                        userInf.Entity.Note = "Đã lên lịch";
-                        _context.UserAppointInfors.Update(userInf.Entity);
+                        //userInf.Entity.Status = "Thành công";
+                        //userInf.Entity.Note = "Đã lên lịch";
+                        // gửi lại cho appoint để update service
+                        // gửi tiếp cho webhook để email về cho người bệnh
+                        var webhookUrl = "http://localhost:5255/api/RevieceChangStatus"; // Thay thế bằng URL của webhook
 
-                        _context.SaveChanges();
+                        var payload = new
+                        {
+                            EventName = "TestEvent",
+                            Data = "Sample data"
+                        };
+
+                        var jsonPayload = JsonSerializer.Serialize(payload);
+
+                        using var httpClient = new HttpClient();
+                        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                        try
+                        {
+                            var response = await httpClient.PostAsync(webhookUrl, content);
+                            response.EnsureSuccessStatusCode();
+
+                            Console.WriteLine("Webhook request sent successfully.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"An error occurred while sending webhook request: {ex.Message}");
+                        }
+
 
                         // Thêm vào lịch bác sĩ
                         if (validSelected != null)

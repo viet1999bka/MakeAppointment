@@ -4,6 +4,20 @@ option csharp_namespace = "Appointment.API.Protos";
 
 service AppointmentBookingApi {
 	rpc SetAppointmentBooking (SetAppointInfor) returns (SetAppointResponse){}
+	rpc GetListAppointRegisted (SetAppointResponse) returns (ListAppointRegistedResponse){}
+}
+
+message ListAppointRegistedResponse {
+	repeated ListAppointRegisted ListAppointRegisRe = 1;
+}
+
+message ListAppointRegisted {
+	int32 id = 1;
+	string nameDoctor = 2;
+	string namePation = 3;
+	string status = 4;
+	string selectedDate = 5;
+	string optionDate = 6;
 }
 
 message SetAppointInfor {

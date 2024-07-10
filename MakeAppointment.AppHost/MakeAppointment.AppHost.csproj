@@ -18,6 +18,7 @@
     <ProjectReference Include="..\ProcessCalendar.API\ProcessCalendar.API.csproj" />
     <ProjectReference Include="..\ReverseProxy\ReverseProxy.csproj" />
     <ProjectReference Include="..\WebClient\WebClient.csproj" />
+    <ProjectReference Include="..\WebHook.API\WebHook.API.csproj" />
   </ItemGroup>
 
 </Project>

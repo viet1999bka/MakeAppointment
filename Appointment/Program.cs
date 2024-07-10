@@ -1,7 +1,8 @@
  using Appointment.API.DI.Extensions;
-using Appointment.API.Protos;
+using Appointment.API.Migrations;
 using Appointment.API.Services;
 using Appointment.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,11 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddGrpc();
 
+builder.Services.AddDbContext<AppointServiceDbContext>(option => option.UseOracle(builder.Configuration.GetConnectionString("OracleDBViet")));
+
 // Configure Masstransit
 builder.Services.AddConfigureMasstransitRabbitMq(builder.Configuration);
-
+//builder.Services.AddMediatR();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
