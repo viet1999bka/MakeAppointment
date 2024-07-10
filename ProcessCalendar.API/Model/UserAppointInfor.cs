@@ -7,5 +7,7 @@
         public string PatientName { get; set; }
         public string Status { get; set; }
         public string Note { get; set; }
+        public DateTime SelectedDate { get; set; }
+        public DateTime OptionDate { get; set; }
     }
 }

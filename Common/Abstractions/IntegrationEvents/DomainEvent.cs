@@ -9,7 +9,7 @@ namespace Common.Abstractions.IntegrationEvents
 {
     public static class DomainEvent
     {
-        public record class EmailNotificationEvent : INotificationEvent
+        public record EmailNotificationEvent : INotificationEvent
         {
             public string Name { get ; set ; }
             public string Description { get ; set ; }
@@ -19,7 +19,7 @@ namespace Common.Abstractions.IntegrationEvents
             public DateTimeOffset Timestamp { get ; set ; }
         }
 
-        public record class SmsNotificationEvent : INotificationEvent
+        public record SmsNotificationEvent : INotificationEvent
         {
             public string Name { get; set; }
             public string Description { get; set; }
@@ -29,7 +29,7 @@ namespace Common.Abstractions.IntegrationEvents
             public DateTimeOffset Timestamp { get; set; }
         }
 
-        public record class BookAppointmentEvent : INotificationEvent
+        public record BookAppointmentEvent : INotificationEvent
         {
             public Guid Id { get ; set ; }
             public DateTimeOffset Timestamp { get ; set ; }

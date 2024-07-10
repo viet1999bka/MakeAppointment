@@ -99,7 +99,6 @@
         var respone = (await clientAppointBook.SetAppointmentBookingAsync(sendInput)).Response;
         if(respone == 1)
         {
-            await JsRuntime.InvokeVoidAsync("alert", "Warning!"); // Alert
             bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Bạn đã gửi thành công"); // Confirm
             _appointment = new AppointmentModel();
         }

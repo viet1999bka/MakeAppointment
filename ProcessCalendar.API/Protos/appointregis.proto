@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option csharp_namespace = "ProcessCalendar.API";
+
+service AppointRegisted {
+	rpc GetListAppointRegisted (GetListAppointRegistedRequest) returns (GetListAppointRegistedResponse){}
+}
+
+message GetListAppointRegistedRequest {
+	int32 re = 1;
+}
+
+message GetListAppointRegistedResponse {
+	repeated AppointRegistedInfo appointRegistedInfor = 1;
+}
+
+message AppointRegistedInfo {
+	int32 id = 1;
+	string nameDoctor = 2;
+	string namePation = 3;
+	string status = 4;
+	string selectedDate = 5;
+	string optionDate = 6;
+}

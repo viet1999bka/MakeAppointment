@@ -82,9 +82,15 @@ namespace ProcessCalendar.API.Migrations
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
 
+                    b.Property<DateTime>("OptionDate")
+                        .HasColumnType("TIMESTAMP(7)");
+
                     b.Property<string>("PatientName")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<DateTime>("SelectedDate")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Status")
                         .IsRequired()

@@ -4,9 +4,9 @@ using ProcessCalendar.API.Abtractions.Messages;
 
 namespace ProcessCalendar.API.MessageBus.Consumer.Event
 {
-    public class SendEventWhenRecieveAppointmentEventConsumer : Consumer<DomainEvent.BookAppointmentEvent>
+    public class SendAppointmentWhenRecievedEventConsumer : Consumer<DomainEvent.BookAppointmentEvent>
     {
-        public SendEventWhenRecieveAppointmentEventConsumer(ISender sender) : base(sender)
+        public SendAppointmentWhenRecievedEventConsumer(ISender sender) : base(sender)
         {
         }
     }

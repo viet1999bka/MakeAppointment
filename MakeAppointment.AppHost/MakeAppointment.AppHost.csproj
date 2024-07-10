@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Appointment\Appointment.API.csproj" />
     <ProjectReference Include="..\ProcessCalendar.API\ProcessCalendar.API.csproj" />
+    <ProjectReference Include="..\ReverseProxy\ReverseProxy.csproj" />
     <ProjectReference Include="..\WebClient\WebClient.csproj" />
   </ItemGroup>
 

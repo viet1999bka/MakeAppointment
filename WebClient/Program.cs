@@ -11,7 +11,8 @@ builder.AddServiceDefaults();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddGrpcClient<doctor.doctorClient>(option => option.Address = new Uri("http://localhost:5048")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
+builder.Services.AddGrpcClient<doctor.doctorClient>(option => option.Address = new Uri("http://localhost:5246")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
+builder.Services.AddGrpcClient<AppointRegisted.AppointRegistedClient>(option => option.Address = new Uri("http://localhost:5048")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
 builder.Services.AddGrpcClient<AppointmentBookingApi.AppointmentBookingApiClient>(option => option.Address = new Uri("http://localhost:5197")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
 
 var app = builder.Build();

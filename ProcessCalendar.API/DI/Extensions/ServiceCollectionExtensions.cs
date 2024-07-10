@@ -1,6 +1,8 @@
 ﻿using MassTransit;
 using ProcessCalendar.API.DI.Options;
 using ProcessCalendar.API.MessageBus.Consumer.Event;
+
+//using ProcessCalendar.API.MessageBus.Consumer.Event;
 using System.Reflection;
 
 namespace ProcessCalendar.API.DI.Extensions
@@ -13,6 +15,7 @@ namespace ProcessCalendar.API.DI.Extensions
             configuration.GetSection(nameof(MasstransitConfiguration)).Bind(masstransitConfiguration);
             services.AddMassTransit(ev =>
             {
+                //ev.AddConsumer<SendAppointmentWhenRecievedEventConsumer>();
                 ev.AddConsumers(Assembly.GetExecutingAssembly());
                 ev.UsingRabbitMq((context, bus) =>
                 {

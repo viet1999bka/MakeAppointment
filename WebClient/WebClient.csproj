@@ -22,6 +22,9 @@
     <Protobuf Include="..\Appointment\Protos\appointment.proto" GrpcServices="Client">
       <Link>Protos\appointment.proto</Link>
     </Protobuf>
+    <Protobuf Include="..\ProcessCalendar.API\Protos\appointregis.proto" GrpcServices="Client">
+      <Link>Protos\appointregis.proto</Link>
+    </Protobuf>
     <Protobuf Include="..\ProcessCalendar.API\Protos\doctor.proto" GrpcServices="Client">
       <Link>Protos\doctor.proto</Link>
     </Protobuf>

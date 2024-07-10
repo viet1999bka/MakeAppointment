@@ -12,8 +12,8 @@ using ProcessCalendar.API.Model;
 namespace ProcessCalendar.API.Migrations
 {
     [DbContext(typeof(CalendarDbContext))]
-    [Migration("20240709084147_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20240709165826_Initial213")]
+    partial class Initial213
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,6 +67,41 @@ namespace ProcessCalendar.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Doctors");
+                });
+
+            modelBuilder.Entity("ProcessCalendar.API.Model.UserAppointInfor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DoctorName")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<DateTime>("OptionDate")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("PatientName")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<DateTime>("SelectedDate")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserAppointInfors");
                 });
 #pragma warning restore 612, 618
         }

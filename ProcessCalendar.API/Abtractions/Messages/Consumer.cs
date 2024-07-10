@@ -4,7 +4,7 @@ using MediatR;
 
 namespace ProcessCalendar.API.Abtractions.Messages
 {
-    public abstract class Consumer<TMessage> : IConsumer<IMessage>
+    public abstract class Consumer<TMessage> : IConsumer<TMessage>
         where TMessage : class, INotificationEvent
     {
         private readonly ISender Sender;
@@ -14,9 +14,10 @@ namespace ProcessCalendar.API.Abtractions.Messages
             Sender = sender;
         }
 
-        public async Task Consume(ConsumeContext<IMessage> context)
+        public async Task Consume(ConsumeContext<TMessage > context)
         {
             await Sender.Send(context.Message);
+            //throw new NotImplementedException();
         }
     }
 }

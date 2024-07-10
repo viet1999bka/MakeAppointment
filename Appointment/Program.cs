@@ -1,4 +1,4 @@
-using Appointment.API.DI.Extensions;
+ using Appointment.API.DI.Extensions;
 using Appointment.API.Protos;
 using Appointment.API.Services;
 using Appointment.Services;

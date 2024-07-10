@@ -18,15 +18,22 @@ namespace Appointment.API.Services
         {
             try
             {
-                    await _publishEndpoint.Publish(new DomainEvent.BookAppointmentEvent()
+                await _publishEndpoint.Publish(new DomainEvent.BookAppointmentEvent()
                 {
                     Id = Guid.NewGuid(),
                     SelectedDoctorId = request.SelectedId,
+                    NamePatient = request.NamePatient,
                     Timestamp = DateTime.UtcNow,
                     DescribeSymptoms = request.Description,
                     SelectedDate = request.SelectedDate,
                     OptionDate = request.OptionDate,
                 });
+
+                //await _publishEndpoint.Publish(new DomainEvent.SmsNotificationEvent()
+                //{
+                //    Id = Guid.NewGuid(),
+                //    Timestamp = DateTime.UtcNow,
+                //});
                 return new SetAppointResponse { Response = 1 };
             }
             catch (Exception ex) {

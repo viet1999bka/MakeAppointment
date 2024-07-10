@@ -12,8 +12,8 @@ using ProcessCalendar.API.Model;
 namespace ProcessCalendar.API.Migrations
 {
     [DbContext(typeof(CalendarDbContext))]
-    [Migration("20240709090625_updateDBs")]
-    partial class updateDBs
+    [Migration("20240709153024_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

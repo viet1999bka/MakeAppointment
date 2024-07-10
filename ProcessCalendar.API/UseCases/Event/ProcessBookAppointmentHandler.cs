@@ -16,86 +16,89 @@ namespace ProcessCalendar.API.UseCases.Event
 
         public async Task Handle(DomainEvent.BookAppointmentEvent request, CancellationToken cancellationToken)
         {
-            // Lấy dữ liệu từ bảng lịch họp bác sĩ
-            // Validate xem trùng dữ liệu không 
-            // Thành công thì xếp lịch ngày random 1 2 3 để xếp ngày 
-            // return
-            // Check xem có lịch bác sĩ có trùng với lịch 
-            // THêm vào db
-            var doctor = await _context.Doctors.SingleOrDefaultAsync(x => x.Id == request.SelectedDoctorId);
-
-            var userInf = await _context.UserAppointInfors.AddAsync(new UserAppointInfor
+            try
             {
-                DoctorName = doctor.Name,
-                PatientName = request.NamePatient,
-                Status = "Đăng ký thành công",
-                Note = ""
-            });
+                // Lấy dữ liệu từ bảng lịch họp bác sĩ
+                // Validate xem trùng dữ liệu không 
+                // Thành công thì xếp lịch ngày random 1 2 3 để xếp ngày 
+                // return
+                // Check xem có lịch bác sĩ có trùng với lịch 
+                // THêm vào db
+                var doctor = await _context.Doctors.SingleOrDefaultAsync(x => x.Id == request.SelectedDoctorId);
 
-            Task.Delay(10000);
-            DateTime selectDate = DateTime.Parse(request.SelectedDate);
-            DateTime optDate = DateTime.Parse(request.OptionDate);
-            var validSelected = await _context.AppointmentItems.SingleOrDefaultAsync(x => x.Id == request.SelectedDoctorId && x.SetDate.Date == selectDate.Date);
-            var validOption = await _context.AppointmentItems.SingleOrDefaultAsync(x => x.Id == request.SelectedDoctorId && x.SetDate.Date == optDate.Date);
-            if (validSelected != null && validOption != null) {
-                _context.UserAppointInfors.Update(new UserAppointInfor
+                DateTime selectDate = DateTime.Parse(request.SelectedDate);
+                DateTime optDate = DateTime.Parse(request.OptionDate);
+                var userInf = await _context.UserAppointInfors.AddAsync(new UserAppointInfor
                 {
-                    Id = userInf.Entity.Id,
-                    Status = "Không thành công",
-                    DoctorName = userInf.Entity.DoctorName,
-                    PatientName = userInf.Entity.PatientName,
-                    Note = "Bác sĩ đã có hẹn vào khoảng thời gian đã chọn"
+                    DoctorName = doctor.Name,
+                    PatientName = request.NamePatient,
+                    Status = "Đăng ký thành công",
+                    Note = "Đang tiếp nhận",
+                    SelectedDate = selectDate,
+                    OptionDate = optDate,
                 });
-            }
-            else
-            {
-                Random rnd = new Random();
-                int val = rnd.Next(1, 3);
-                if(val == 1)
+                await _context.SaveChangesAsync();
+                await Task.Delay(10000);
+                var validSelected = await _context.AppointmentItems.FirstOrDefaultAsync(x => x.DoctorId == request.SelectedDoctorId && x.SetDate == selectDate);
+                var validOption = await _context.AppointmentItems.FirstOrDefaultAsync(x => x.DoctorId == request.SelectedDoctorId && x.SetDate == optDate);
+               if (validSelected != null && validOption != null)
                 {
-                    _context.UserAppointInfors.Update(new UserAppointInfor
-                    {
-                        Id = userInf.Entity.Id,
-                        Status = "Đang tiếp nhận",
-                        DoctorName = userInf.Entity.DoctorName,
-                        PatientName = userInf.Entity.PatientName,
-                        Note = ""
-                    });
+                    userInf.Entity.Status = "Không thành công";
+                    userInf.Entity.Note = "Bác sĩ đã có hẹn vào khoảng thời gian đã chọn";
+                    _context.UserAppointInfors.Update(userInf.Entity);
+                    _context.SaveChanges();
                 }
                 else
                 {
-                    _context.UserAppointInfors.Update(new UserAppointInfor
+                    Random rnd = new Random();
+                    int val = rnd.Next(1, 3);
+                    if (val == 1)
                     {
-                        Id = userInf.Entity.Id,
-                        Status = "Thành công",
-                        DoctorName = userInf.Entity.DoctorName,
-                        PatientName = userInf.Entity.PatientName,
-                        Note = ""
-                    });
-
-                    // Thêm vào lịch bác sĩ
-                    if(validSelected != null)
-                    {
-                        _context.AppointmentItems.Add(new AppointmentItem
-                        {
-                            DoctorId = request.SelectedDoctorId,
-                            NamePatient = request.NamePatient,
-                            SetDate = optDate,
-                        });
-                    }  
+                        userInf.Entity.Status = "Đã đăng ký";
+                        userInf.Entity.Note = "Đang tiếp nhận";
+                        _context.UserAppointInfors.Update(userInf.Entity);
+                        _context.SaveChanges();
+                    }
                     else
                     {
-                        _context.AppointmentItems.Add(new AppointmentItem
+                        userInf.Entity.Status = "Thành công";
+                        userInf.Entity.Note = "Đã lên lịch";
+                        _context.UserAppointInfors.Update(userInf.Entity);
+
+                        _context.SaveChanges();
+
+                        // Thêm vào lịch bác sĩ
+                        if (validSelected != null)
                         {
-                            DoctorId = request.SelectedDoctorId,
-                            NamePatient = request.NamePatient,
-                            SetDate = selectDate,
-                        });
+                            _context.AppointmentItems.Add(new AppointmentItem
+                            {
+                                DoctorId = request.SelectedDoctorId,
+                                NamePatient = request.NamePatient,
+                                SetDate = optDate,
+                            });
+                            _context.SaveChanges();
+
+                        }
+                        else
+                        {
+                            _context.AppointmentItems.Add(new AppointmentItem
+                            {
+                                DoctorId = request.SelectedDoctorId,
+                                NamePatient = request.NamePatient,
+                                SetDate = selectDate,
+                            });
+                            _context.SaveChanges();
+
+                        }
                     }
                 }
-            }
 
-            return;
+                return;
+            }
+            catch (Exception ex) {
+                return;
+            }
+            
         }
     }
 }

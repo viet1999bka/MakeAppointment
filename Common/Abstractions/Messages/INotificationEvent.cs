@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Common.Abstractions.Messages
-{   
+{
+    [ExcludeFromTopology]   
+    
     public interface INotificationEvent : IMessage
     {
     }
