@@ -9,14 +9,14 @@ namespace Appointment.API.DI.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        //public static IServiceCollection AddMediatR(this IServiceCollection services) => services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+        public static IServiceCollection AddMediatR(this IServiceCollection services) => services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
         public static IServiceCollection AddConfigureMasstransitRabbitMq(this IServiceCollection services, IConfiguration configuration) {
             var masstransitConfiguration = new MasstransitConfiguration();
             configuration.GetSection(nameof(MasstransitConfiguration)).Bind(masstransitConfiguration);
             services.AddMassTransit(ev =>
             {
                 ev.AddConsumer<SendBookApointmentWhenRecieveCommandCosumer>();
-
+                ev.AddConsumers(Assembly.GetExecutingAssembly());
                 ev.UsingRabbitMq((context, bus) =>
                 {
                     bus.Host(masstransitConfiguration.Host, masstransitConfiguration.VHost, h =>
@@ -28,6 +28,7 @@ namespace Appointment.API.DI.Extensions
                     {
                         e.ConfigureConsumer<SendBookApointmentWhenRecieveCommandCosumer>(context);
                     });
+                    bus.ConfigureEndpoints(context);
 
                 });
 

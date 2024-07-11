@@ -6,5 +6,6 @@ namespace ProcessCalendar.API.Repositories
     public interface IDoctorRepository
     {
         public Task<List<DoctorModel>> GetListDoctorAsync();
+        public Task<int> AddNewDoctorAsync(DoctorModel doctorNew);
     }
 }

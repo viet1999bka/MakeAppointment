@@ -12,8 +12,8 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace Appointment.API.Migrations
 {
     [DbContext(typeof(AppointServiceDbContext))]
-    [Migration("20240710082407_init")]
-    partial class init
+    [Migration("20240710142101_inittial")]
+    partial class inittial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

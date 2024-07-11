@@ -19,6 +19,19 @@ namespace ProcessCalendar.API.Services
             return new();
         }
 
+       [AllowAnonymous]
+       public override async Task<AddNewDoctorResponse> AddNewDoctor(DoctorInfo request, ServerCallContext context)
+        {
+            var doctor = new DoctorModel
+            {
+                Name = request.Name,
+                Description = request.Description,
+            };
+            var res = await respos.AddNewDoctorAsync(doctor);
+            var ret = new AddNewDoctorResponse();
+            ret.Respone = res;
+            return ret;
+        }
         private static GetListDoctorResponse MapToCustomerBasketResponse(List<DoctorModel> doctorModels)
         {
             var response = new GetListDoctorResponse();

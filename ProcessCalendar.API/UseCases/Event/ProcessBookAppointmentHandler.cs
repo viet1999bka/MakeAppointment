@@ -1,4 +1,5 @@
 ﻿using Common.Abstractions.IntegrationEvents;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ProcessCalendar.API.Model;
@@ -10,10 +11,12 @@ namespace ProcessCalendar.API.UseCases.Event
     public class ProcessBookAppointmentHandler : IRequestHandler<DomainEvent.BookAppointmentEvent>
     {
         private readonly CalendarDbContext _context;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public ProcessBookAppointmentHandler(CalendarDbContext context)
+        public ProcessBookAppointmentHandler(CalendarDbContext context, IPublishEndpoint publishEndpoint)
         {
             _context = context;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task Handle(DomainEvent.BookAppointmentEvent request, CancellationToken cancellationToken)
@@ -33,10 +36,11 @@ namespace ProcessCalendar.API.UseCases.Event
                 await Task.Delay(10000);
                 var validSelected = await _context.AppointmentItems.FirstOrDefaultAsync(x => x.DoctorId == request.SelectedDoctorId && x.SetDate == selectDate);
                 var validOption = await _context.AppointmentItems.FirstOrDefaultAsync(x => x.DoctorId == request.SelectedDoctorId && x.SetDate == optDate);
+                string statusR, note;
                if (validSelected != null && validOption != null)
                 {
-                    var status = "Không thành công";
-                    var ote = "Bác sĩ đã có hẹn vào khoảng thời gian đã chọn";
+                    statusR = "Không thành công";
+                    note = "Bác sĩ đã có hẹn vào khoảng thời gian đã chọn";
                     // gửi lại cho appoint để update service
                 }
                 else
@@ -46,22 +50,22 @@ namespace ProcessCalendar.API.UseCases.Event
                     val = 2;
                     if (val == 1)
                     {
-                        //userInf.Entity.Status = "Đã đăng ký";
-                        //userInf.Entity.Note = "Đang tiếp nhận";
+                        statusR = "Đã đăng ký";
+                        note = "Đang tiếp nhận";
                         // gửi lại cho appoint để update service
                     }
                     else
                     {
-                        //userInf.Entity.Status = "Thành công";
-                        //userInf.Entity.Note = "Đã lên lịch";
+                        statusR = "Thành công";
+                        note = "Đã lên lịch";
                         // gửi lại cho appoint để update service
                         // gửi tiếp cho webhook để email về cho người bệnh
                         var webhookUrl = "http://localhost:5255/api/RevieceChangStatus"; // Thay thế bằng URL của webhook
 
                         var payload = new
                         {
-                            EventName = "TestEvent",
-                            Data = "Sample data"
+                            EventName = statusR,
+                            Data = note
                         };
 
                         var jsonPayload = JsonSerializer.Serialize(payload);
@@ -80,6 +84,16 @@ namespace ProcessCalendar.API.UseCases.Event
                         {
                             Console.WriteLine($"An error occurred while sending webhook request: {ex.Message}");
                         }
+
+                        // Gửi lên queue để chỗ khác xử lý
+                        await _publishEndpoint.Publish(new DomainEvent.ChangeStatusEvent()
+                        {
+                            Id = Guid.NewGuid(),
+                            Timestamp = DateTime.Now,
+                            IdApoint = request.IdApoint,
+                            Status = statusR,
+                            Note = note
+                        });
 
 
                         // Thêm vào lịch bác sĩ

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Appointment.API.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class inittial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

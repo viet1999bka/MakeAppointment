@@ -16,10 +16,22 @@ namespace ProcessCalendar.API.Repositories
             _mapper = mapper;
         }
 
+
         public async Task<List<DoctorModel>> GetListDoctorAsync()
         {
             var doctors = await _context.Doctors!.ToListAsync();
             return _mapper.Map<List<DoctorModel>>(doctors);
+        }
+        public async Task<int> AddNewDoctorAsync(DoctorModel doctorNew)
+        {
+            var doctor = new DoctorItem
+            {
+                Name = doctorNew.Name,
+                Description = doctorNew.Description,
+            };
+            await _context.AddAsync(doctor);
+            await _context.SaveChangesAsync();
+            return 1;
         }
     }
 }

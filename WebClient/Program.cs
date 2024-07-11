@@ -1,4 +1,5 @@
 using Appointment.API.Protos;
+using Blazored.Toast;
 using Grpc.Net.Client.Web;
 using ProcessCalendar.API;
 using WebClient.Components;
@@ -11,10 +12,9 @@ builder.AddServiceDefaults();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddGrpcClient<doctor.doctorClient>(option => option.Address = new Uri("https://localhost:7180")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
+builder.Services.AddGrpcClient<doctor.doctorClient>(option => option.Address = new Uri("https://localhost:7265/calendarAPI")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
 builder.Services.AddGrpcClient<AppointRegisted.AppointRegistedClient>(option => option.Address = new Uri("https://localhost:7180")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
-builder.Services.AddGrpcClient<AppointmentBookingApi.AppointmentBookingApiClient>(option => option.Address = new Uri("http://localhost:5197")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
-
+builder.Services.AddGrpcClient<AppointmentBookingApi.AppointmentBookingApiClient>(option => option.Address = new Uri("https://localhost:7238")).ConfigurePrimaryHttpMessageHandler(() => new GrpcWebHandler(new HttpClientHandler()));
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

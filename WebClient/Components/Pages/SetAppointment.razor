@@ -83,6 +83,7 @@
         if (int.TryParse(e.Value.ToString(), out int consultantId))
         {
             _appointment.SelectedConsultantId = consultantId;
+            name = doctors.FirstOrDefault(x => x.Id == consultantId).Name;
         }
     }
     private async Task SubmitClicked()
@@ -93,7 +94,8 @@
             NamePatient = _appointment.NamePatients,
             Description = _appointment.DescribeSymptoms,
             SelectedDate = _appointment.SelectedDate.ToString(),
-            OptionDate = _appointment.OptionDate1.ToString()
+            OptionDate = _appointment.OptionDate1.ToString(),
+            NameDoctor = name
         };
 
         var respone = (await clientAppointBook.SetAppointmentBookingAsync(sendInput)).Response;

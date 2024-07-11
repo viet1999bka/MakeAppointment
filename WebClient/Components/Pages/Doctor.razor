@@ -1,11 +1,25 @@
 ﻿@page "/doctor"
 @rendermode InteractiveServer
+@using Common.Models
 @using ProcessCalendar.API
+@using Blazored.Toast.Configuration
 @inject doctor.doctorClient client
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
 <h3>Doctor</h3>
 <section id="booking" class="section-padding">
-    @if (doctors == null)
+    <div class="row">
+        <div class="col-4">
+            <InputText class="form-control" @bind-Value="_doctorModel.Name"></InputText>
+        </div>
+        <div class="col-4">
+            <InputText class="form-control" @bind-Value="_doctorModel.Description"></InputText>
+        </div>
+        <div class="col-3">
+            <button class="btn btn-submit btn-primary" @onclick="SubmitClicked">Submit</button>
+        </div>
+    </div>
+    @if (doctors is null)
     {
         <p><em>Loading...</em></p>
     }
@@ -16,7 +30,6 @@
                 <tr>
                     <th>Tên</th>
                     <th>Mô tả</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -25,11 +38,6 @@
                     <tr>
                         <td>@forecast.Name</td>
                         <td>@forecast.Description</td>
-                        <td>
-                            <div class="form-group">
-                                <button class="btn btn-submit" @onclick="SubmitClicked">Submit</button>
-                            </div>
-                        </td>
                     </tr>
                 }
             </tbody>
@@ -39,13 +47,27 @@
 
 @code {
     private IList<DoctorInfo> doctors;
-
+    private DoctorInfo _doctorModel;
     protected override async Task OnInitializedAsync()
     {
+        _doctorModel = new DoctorInfo();
         doctors = (await client.GetListDoctorAsync(new Empty())).DoctorInfo;
     }
-    private void SubmitClicked()
+    private async void SubmitClicked()
     {
-        NavigationManager.NavigateTo("./regisAppoint");
+        var respone = (await client.AddNewDoctorAsync(_doctorModel)).Respone;
+        if (respone != 0)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Bạn đã gửi thành công!"); // Alert
+
+        }
+        else
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Có lỗi xảy ra!"); // Alert
+
+
+        }
+
+        NavigationManager.NavigateTo(NavigationManager.Uri, true);
     }
 }

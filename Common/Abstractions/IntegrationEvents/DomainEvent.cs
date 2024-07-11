@@ -38,6 +38,16 @@ namespace Common.Abstractions.IntegrationEvents
             public string DescribeSymptoms { get; set; }
             public string SelectedDate { get; set; }
             public string OptionDate { get; set; }
+            public int IdApoint { get; set; }
+        }
+
+        public record ChangeStatusEvent : INotificationEvent
+        {
+            public Guid Id { get; set; }
+            public DateTimeOffset Timestamp { get; set; }
+            public int IdApoint { get; set; }
+            public string Status { get; set; }
+            public string Note { get; set; }
         }
     }
 }

@@ -15,7 +15,7 @@ builder.Services.AddDbContext<AppointServiceDbContext>(option => option.UseOracl
 
 // Configure Masstransit
 builder.Services.AddConfigureMasstransitRabbitMq(builder.Configuration);
-//builder.Services.AddMediatR();
+builder.Services.AddMediatR();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

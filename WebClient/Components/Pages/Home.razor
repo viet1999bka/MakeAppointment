@@ -1,7 +1,7 @@
 ﻿@page "/"
+@using Appointment.API.Protos
 @using Google.Protobuf.WellKnownTypes
-@using ProcessCalendar.API
-@inject AppointRegisted.AppointRegistedClient client
+@inject AppointmentBookingApi.AppointmentBookingApiClient client
 <PageTitle>Home</PageTitle>
 
 <section id="apoint" class="section-padding">
@@ -37,13 +37,13 @@
     }
 </section>
 @code{
-    private IList<AppointRegistedInfo> apointRegis;
+    private IList<ListAppointRegisted> apointRegis;
 
     protected override async Task OnInitializedAsync()
     {
-        var req = new GetListAppointRegistedRequest();
-        req.Re = 1;
+        var req = new SetAppointResponse();
+        req.Response = 1;
 
-        apointRegis = (await client.GetListAppointRegistedAsync(req)).AppointRegistedInfor;
+        apointRegis = (await client.GetListAppointRegistedAsync(req)).ListAppointRegisRe;
     }
 }

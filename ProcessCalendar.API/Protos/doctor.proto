@@ -5,6 +5,7 @@ option csharp_namespace = "ProcessCalendar.API";
 service doctor {
   // Sends a greeting
   rpc GetListDoctor (Empty) returns (GetListDoctorResponse);
+  rpc AddNewDoctor (DoctorInfo) returns (AddNewDoctorResponse);
 }
 
 // The request message containing the user's name.
@@ -20,5 +21,9 @@ message DoctorInfo {
 	int32 id = 1;
 	string name = 2;
 	string description = 3;
+}
+
+message AddNewDoctorResponse {
+	int32 respone = 1;
 }
 

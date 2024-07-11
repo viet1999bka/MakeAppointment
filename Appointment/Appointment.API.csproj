@@ -38,8 +38,4 @@
     <ProjectReference Include="..\MakeAppointment.ServiceDefaults\MakeAppointment.ServiceDefaults.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UseCases\" />
-  </ItemGroup>
-
 </Project>

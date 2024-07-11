@@ -29,7 +29,7 @@ namespace Appointment.API.MessageBus.Consumer.Command
             var userInf = await _dbContext.UserAppointInfors.AddAsync(new UserAppointInfor
             {
                 DoctorId = context.Message.SelectedDoctorId,
-                DoctorName = "chịu đó",
+                DoctorName = context.Message.NameDoctor,
                 PatientName = context.Message.NamePatient,
                 Status = "Đăng ký thành công",
                 Note = "Đang tiếp nhận",
@@ -47,6 +47,7 @@ namespace Appointment.API.MessageBus.Consumer.Command
                 DescribeSymptoms = context.Message.DescribeSymptoms,
                 SelectedDate = context.Message.SelectedDate,
                 OptionDate = context.Message.OptionDate,
+                IdApoint = userInf.Entity.Id,
             });
 
         }
