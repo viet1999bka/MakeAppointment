@@ -1,4 +1,5 @@
 ﻿using Common.Abstractions.Messages;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Common.Abstractions.IntegrationEvents
 {
     public static class Command
     {
-        public record SendBookAppointment /*: INotificationEvent*/
+        public record SendBookAppointment : IRequest /*: INotificationEvent*/
         {
             public Guid Id { get; set; }
             public DateTimeOffset Timestamp { get; set; }

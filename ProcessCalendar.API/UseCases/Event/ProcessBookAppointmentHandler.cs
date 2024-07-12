@@ -33,7 +33,6 @@ namespace ProcessCalendar.API.UseCases.Event
 
                 DateTime selectDate = DateTime.Parse(request.SelectedDate);
                 DateTime optDate = DateTime.Parse(request.OptionDate);
-                await Task.Delay(10000);
                 var validSelected = await _context.AppointmentItems.FirstOrDefaultAsync(x => x.DoctorId == request.SelectedDoctorId && x.SetDate == selectDate);
                 var validOption = await _context.AppointmentItems.FirstOrDefaultAsync(x => x.DoctorId == request.SelectedDoctorId && x.SetDate == optDate);
                 string statusR, note;
@@ -58,71 +57,71 @@ namespace ProcessCalendar.API.UseCases.Event
                     {
                         statusR = "Thành công";
                         note = "Đã lên lịch";
-                        // gửi lại cho appoint để update service
-                        // gửi tiếp cho webhook để email về cho người bệnh
-                        var webhookUrl = "http://localhost:5255/api/RevieceChangStatus"; // Thay thế bằng URL của webhook
-
-                        var payload = new
-                        {
-                            EventName = statusR,
-                            Data = note
-                        };
-
-                        var jsonPayload = JsonSerializer.Serialize(payload);
-
-                        using var httpClient = new HttpClient();
-                        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-                        try
-                        {
-                            var response = await httpClient.PostAsync(webhookUrl, content);
-                            response.EnsureSuccessStatusCode();
-
-                            Console.WriteLine("Webhook request sent successfully.");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"An error occurred while sending webhook request: {ex.Message}");
-                        }
-
-                        // Gửi lên queue để chỗ khác xử lý
-                        await _publishEndpoint.Publish(new DomainEvent.ChangeStatusEvent()
-                        {
-                            Id = Guid.NewGuid(),
-                            Timestamp = DateTime.Now,
-                            IdApoint = request.IdApoint,
-                            Status = statusR,
-                            Note = note
-                        });
+                   
 
 
                         // Thêm vào lịch bác sĩ
                         if (validSelected != null)
                         {
-                            _context.AppointmentItems.Add(new AppointmentItem
+                            await _context.AppointmentItems.AddAsync(new AppointmentItem
                             {
                                 DoctorId = request.SelectedDoctorId,
                                 NamePatient = request.NamePatient,
                                 SetDate = optDate,
                             });
-                            _context.SaveChanges();
 
                         }
                         else
                         {
-                            _context.AppointmentItems.Add(new AppointmentItem
+                            await _context.AppointmentItems.AddAsync(new AppointmentItem
                             {
                                 DoctorId = request.SelectedDoctorId,
                                 NamePatient = request.NamePatient,
                                 SetDate = selectDate,
                             });
-                            _context.SaveChanges();
 
                         }
+                        await _context.SaveChangesAsync();
                     }
                 }
+                // gửi lại cho appoint để update service
+                // gửi tiếp cho webhook để email về cho người bệnh
+                //var webhookUrl = "http://localhost:5255/api/RevieceChangStatus"; // Thay thế bằng URL của webhook
 
-                return;
+                //var payload = new
+                //{
+                //    EventName = statusR,
+                //    Data = note
+                //};
+
+                //var jsonPayload = JsonSerializer.Serialize(payload);
+
+                //using var httpClient = new HttpClient();
+                //var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                //try
+                //{
+                //    var response = await httpClient.PostAsync(webhookUrl, content);
+                //    response.EnsureSuccessStatusCode();
+
+                //    Console.WriteLine("Webhook request sent successfully.");
+                //}
+                //catch (Exception ex)
+                //{
+                //    Console.WriteLine($"An error occurred while sending webhook request: {ex.Message}");
+                //}
+
+                //// Gửi lên queue để chỗ khác xử lý
+                //await _publishEndpoint.Publish(new DomainEvent.ChangeStatusEvent()
+                //{
+                //    Id = Guid.NewGuid(),
+                //    Timestamp = DateTime.Now,
+                //    IdApoint = request.IdApoint,
+                //    Status = statusR,
+                //    Note = note
+                //});
+
+                //return;
             }
             catch (Exception ex) {
                 return;

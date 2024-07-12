@@ -30,6 +30,7 @@
                 <tr>
                     <th>Tên</th>
                     <th>Mô tả</th>
+                    <th>Thao tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,6 +39,7 @@
                     <tr>
                         <td>@forecast.Name</td>
                         <td>@forecast.Description</td>
+                        <td><button class="btn btn-info text-white" @onclick="() => ViewAppoinOfDoctor(forecast.Id)">Xem lịch của bác sĩ</button></td>
                     </tr>
                 }
             </tbody>
@@ -69,5 +71,10 @@
         }
 
         NavigationManager.NavigateTo(NavigationManager.Uri, true);
+    }
+
+    private void ViewAppoinOfDoctor (int id)
+    {
+        NavigationManager.NavigateTo($"/appointdoctor/{id}");
     }
 }

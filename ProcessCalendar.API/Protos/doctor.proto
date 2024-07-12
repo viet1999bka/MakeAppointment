@@ -6,6 +6,7 @@ service doctor {
   // Sends a greeting
   rpc GetListDoctor (Empty) returns (GetListDoctorResponse);
   rpc AddNewDoctor (DoctorInfo) returns (AddNewDoctorResponse);
+  rpc GetListAppointOfDoctor (AddNewDoctorResponse) returns (GetListAppointOfDoctorRespone);
 }
 
 // The request message containing the user's name.
@@ -25,5 +26,17 @@ message DoctorInfo {
 
 message AddNewDoctorResponse {
 	int32 respone = 1;
+}
+
+message GetListAppointOfDoctorRespone {
+	repeated ListAppointOfDoctor lstAppoint = 1;
+	string nameDoctor = 2;
+}
+
+message ListAppointOfDoctor {
+	int32 id = 1;
+	int32 doctorId = 2;
+	string namePatient = 3;
+	string date = 4;
 }
 

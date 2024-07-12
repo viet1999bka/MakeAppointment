@@ -3,9 +3,12 @@ using Appointment.API.Protos;
 using Common.Abstractions.IntegrationEvents;
 using Grpc.Core;
 using MassTransit;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
+using static Common.Abstractions.IntegrationEvents.Command;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Appointment.API.Services
 {
@@ -13,10 +16,12 @@ namespace Appointment.API.Services
     {
         private readonly AppointServiceDbContext _contextDb;
         private readonly IBus _bus;
-        public AppointmentService(AppointServiceDbContext contextDb, IBus bus)
+        private readonly IMediator _mediator;
+        public AppointmentService(AppointServiceDbContext contextDb, IBus bus, IMediator mediator)
         {
             _contextDb = contextDb;
             _bus = bus;
+            _mediator = mediator;
         }
         [AllowAnonymous]
         public override async Task<SetAppointResponse> SetAppointmentBooking(SetAppointInfor request, ServerCallContext context)
@@ -24,7 +29,7 @@ namespace Appointment.API.Services
             try
             {
 
-                var commandMess = new Command.SendBookAppointment()
+                var commandMess = new SendBookAppointment()
                 {
                     Id = Guid.NewGuid(),
                     SelectedDoctorId = request.SelectedId,
@@ -35,9 +40,7 @@ namespace Appointment.API.Services
                     OptionDate = request.OptionDate,
                     NameDoctor = request.NameDoctor,
                 };
-
-                var endpint = await _bus.GetSendEndpoint(Addess<Command.SendBookAppointment>());
-                await endpint.Send(commandMess);
+                await _mediator.Send(commandMess);
                 return new SetAppointResponse { Response = 1 };
             }
             catch (Exception ex) {
@@ -49,7 +52,7 @@ namespace Appointment.API.Services
         [AllowAnonymous]
         public override async Task<ListAppointRegistedResponse> GetListAppointRegisted(SetAppointResponse request, ServerCallContext context)
         {
-            var lstResult = await _contextDb.UserAppointInfors.ToListAsync();
+            var lstResult = await _contextDb.UserAppointInfors.OrderBy(x => x.Id).ToListAsync();
             var result = new ListAppointRegistedResponse();
             foreach (var item in lstResult) {
                 result.ListAppointRegisRe.Add(new ListAppointRegisted

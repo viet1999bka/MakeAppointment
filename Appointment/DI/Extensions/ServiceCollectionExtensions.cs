@@ -15,7 +15,7 @@ namespace Appointment.API.DI.Extensions
             configuration.GetSection(nameof(MasstransitConfiguration)).Bind(masstransitConfiguration);
             services.AddMassTransit(ev =>
             {
-                ev.AddConsumer<SendBookApointmentWhenRecieveCommandCosumer>();
+                //ev.AddConsumer<SendBookApointmentWhenRecieveCommandCosumer>();
                 ev.AddConsumers(Assembly.GetExecutingAssembly());
                 ev.UsingRabbitMq((context, bus) =>
                 {
@@ -24,10 +24,10 @@ namespace Appointment.API.DI.Extensions
                         h.Username(masstransitConfiguration.UserName);
                         h.Password(masstransitConfiguration.Password);
                     });
-                    bus.ReceiveEndpoint("send-book-appointment", e =>
-                    {
-                        e.ConfigureConsumer<SendBookApointmentWhenRecieveCommandCosumer>(context);
-                    });
+                    //bus.ReceiveEndpoint("send-book-appointment", e =>
+                    //{
+                    //    e.ConfigureConsumer<SendBookApointmentWhenRecieveCommandCosumer>(context);
+                    //});
                     bus.ConfigureEndpoints(context);
 
                 });

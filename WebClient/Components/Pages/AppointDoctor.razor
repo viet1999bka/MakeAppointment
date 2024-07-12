@@ -1,0 +1,51 @@
+﻿@page "/appointdoctor/{IdDoctor:int}"
+@page "/appointdoctor"
+@rendermode InteractiveServer
+@using Common.Models
+@using ProcessCalendar.API
+@using Blazored.Toast.Configuration
+@inject doctor.doctorClient client
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+<h1>Lịch của bác sĩ</h1>
+<section id="booking" class="section-padding">
+    @if (apoints is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <br />
+        <h3>Tên bác sĩ : @apoints.NameDoctor</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tên bệnh nhân</th>
+                    <th>Ngày tư vấn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var forecast in apoints.LstAppoint)
+                {
+                    <tr>
+                        <td>@forecast.NamePatient</td>
+                        <td>@forecast.Date</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
+
+@code {
+    [Parameter]
+    public int IdDoctor { get; set; }
+    private GetListAppointOfDoctorRespone apoints;
+    protected override async Task OnInitializedAsync()
+    {
+        if(IdDoctor != null)
+        {
+            apoints = (await client.GetListAppointOfDoctorAsync(new AddNewDoctorResponse { Respone = IdDoctor }));
+        }
+    }
+}

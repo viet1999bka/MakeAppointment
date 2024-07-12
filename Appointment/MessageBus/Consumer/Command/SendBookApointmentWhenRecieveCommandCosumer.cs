@@ -9,28 +9,28 @@ using static Common.Abstractions.IntegrationEvents.Command;
 
 namespace Appointment.API.MessageBus.Consumer.Command
 {
-    public class SendBookApointmentWhenRecieveCommandCosumer : IConsumer<SendBookAppointment>
+    public class SendBookApointmentWhenRecieveCommandCosumer : IRequestHandler<SendBookAppointment>
     {
         private readonly AppointServiceDbContext _dbContext;
         private readonly IPublishEndpoint _publishEndpoint;
 
-        public SendBookApointmentWhenRecieveCommandCosumer(AppointServiceDbContext dbContext, IPublishEndpoint publishEndpoint)
+        public SendBookApointmentWhenRecieveCommandCosumer(IPublishEndpoint publishEndpoint, AppointServiceDbContext dbContext)
         {
-            _dbContext = dbContext;
             _publishEndpoint = publishEndpoint;
+            _dbContext = dbContext;
         }
 
-        public async Task Consume(ConsumeContext<SendBookAppointment> context)
-        {
+        public async Task Handle(SendBookAppointment context, CancellationToken cancellationToken)
+    {
             // Nhận command 
             //  Xử lý
-            DateTime selectDate = DateTime.Parse(context.Message.SelectedDate);
-            DateTime optDate = DateTime.Parse(context.Message.OptionDate);
+            DateTime selectDate = DateTime.Parse(context.SelectedDate);
+            DateTime optDate = DateTime.Parse(context.OptionDate);
             var userInf = await _dbContext.UserAppointInfors.AddAsync(new UserAppointInfor
             {
-                DoctorId = context.Message.SelectedDoctorId,
-                DoctorName = context.Message.NameDoctor,
-                PatientName = context.Message.NamePatient,
+                DoctorId = context.SelectedDoctorId,
+                DoctorName = context.NameDoctor,
+                PatientName = context.NamePatient,
                 Status = "Đăng ký thành công",
                 Note = "Đang tiếp nhận",
                 SelectedDate = selectDate,
@@ -41,12 +41,12 @@ namespace Appointment.API.MessageBus.Consumer.Command
             await _publishEndpoint.Publish(new DomainEvent.BookAppointmentEvent()
             {
                 Id = Guid.NewGuid(),
-                SelectedDoctorId = context.Message.SelectedDoctorId,
-                NamePatient = context.Message.NamePatient,
+                SelectedDoctorId = context.SelectedDoctorId,
+                NamePatient = context.NamePatient,
                 Timestamp = DateTime.UtcNow,
-                DescribeSymptoms = context.Message.DescribeSymptoms,
-                SelectedDate = context.Message.SelectedDate,
-                OptionDate = context.Message.OptionDate,
+                DescribeSymptoms = context.DescribeSymptoms,
+                SelectedDate = context.SelectedDate,
+                OptionDate = context.OptionDate,
                 IdApoint = userInf.Entity.Id,
             });
 

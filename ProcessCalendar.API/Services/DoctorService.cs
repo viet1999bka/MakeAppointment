@@ -32,6 +32,24 @@ namespace ProcessCalendar.API.Services
             ret.Respone = res;
             return ret;
         }
+
+        [AllowAnonymous]
+        public override async Task<GetListAppointOfDoctorRespone> GetListAppointOfDoctor(AddNewDoctorResponse request, ServerCallContext context)
+        {
+            var dataDB = await respos.GetAppointOfDoctorAsync(request.Respone);
+            var ret = new GetListAppointOfDoctorRespone();
+            foreach (var item in dataDB?.ListAppoint) {
+                ret.LstAppoint.Add(new ListAppointOfDoctor
+                {
+                    Id = item.Id,
+                    DoctorId = item.DoctorId,
+                    NamePatient = item.NamePatient,
+                    Date = item.SetDate.ToString()
+                });
+            }
+            ret.NameDoctor = dataDB?.NameDoctor;
+            return ret;
+        }
         private static GetListDoctorResponse MapToCustomerBasketResponse(List<DoctorModel> doctorModels)
         {
             var response = new GetListDoctorResponse();
