@@ -15,12 +15,10 @@ namespace Appointment.API.Services
     public class AppointmentService : AppointmentBookingApi.AppointmentBookingApiBase
     {
         private readonly AppointServiceDbContext _contextDb;
-        private readonly IBus _bus;
         private readonly IMediator _mediator;
-        public AppointmentService(AppointServiceDbContext contextDb, IBus bus, IMediator mediator)
+        public AppointmentService(AppointServiceDbContext contextDb, IMediator mediator)
         {
             _contextDb = contextDb;
-            _bus = bus;
             _mediator = mediator;
         }
         [AllowAnonymous]

@@ -42,7 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="MessageBus\Consumer\Command\" />
     <Folder Include="UseCases\Command\" />
   </ItemGroup>
 

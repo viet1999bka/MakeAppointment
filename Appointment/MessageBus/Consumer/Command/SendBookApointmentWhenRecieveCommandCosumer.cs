@@ -1,4 +1,4 @@
-﻿using Appointment.API.Abtractions.Message;
+﻿//using Appointment.API.Abtractions.Message;
 using Appointment.API.Migrations;
 using Appointment.API.Model;
 using Common.Abstractions.IntegrationEvents;
@@ -12,11 +12,12 @@ namespace Appointment.API.MessageBus.Consumer.Command
     public class SendBookApointmentWhenRecieveCommandCosumer : IRequestHandler<SendBookAppointment>
     {
         private readonly AppointServiceDbContext _dbContext;
-        private readonly IPublishEndpoint _publishEndpoint;
+        //private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IRequestClient<SendAppointmentToProcessRequest> _client;
 
-        public SendBookApointmentWhenRecieveCommandCosumer(IPublishEndpoint publishEndpoint, AppointServiceDbContext dbContext)
+        public SendBookApointmentWhenRecieveCommandCosumer(IRequestClient<SendAppointmentToProcessRequest> client, AppointServiceDbContext dbContext)
         {
-            _publishEndpoint = publishEndpoint;
+            _client = client;
             _dbContext = dbContext;
         }
 
@@ -37,8 +38,8 @@ namespace Appointment.API.MessageBus.Consumer.Command
                 OptionDate = optDate,
             });
             await _dbContext.SaveChangesAsync();
-            // Publish lên exchange
-            await _publishEndpoint.Publish(new DomainEvent.BookAppointmentEvent()
+
+            var response = await _client.GetResponse<UpdateStatusAppintResponse>(new SendAppointmentToProcessRequest
             {
                 Id = Guid.NewGuid(),
                 SelectedDoctorId = context.SelectedDoctorId,
@@ -48,7 +49,13 @@ namespace Appointment.API.MessageBus.Consumer.Command
                 SelectedDate = context.SelectedDate,
                 OptionDate = context.OptionDate,
                 IdApoint = userInf.Entity.Id,
-            });
+            }, cancellationToken);
+            var res = response.Message;
+            userInf.Entity.Status = res.status;
+            userInf.Entity.Note = res.note; 
+            _dbContext.UserAppointInfors.Update(userInf.Entity);
+            await _dbContext.SaveChangesAsync();
+            return;
 
         }
     }

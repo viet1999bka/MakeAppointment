@@ -1,8 +1,9 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using ProcessCalendar.API.DI.Extensions;
 using ProcessCalendar.API.Model;
 using ProcessCalendar.API.Repositories;
 using ProcessCalendar.API.Services;
+using ProcessCalendar.API.UseCases.Event;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +17,23 @@ builder.Services.AddDbContext<CalendarDbContext>(option => option.UseOracle(buil
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 
-builder.Services.AddConfigureMasstransitRabbitMq(builder.Configuration);
-
-builder.Services.AddMediatR();
+// Configure Masstransit
+var assembly = typeof(Program).Assembly;
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(assembly));
+builder.Services.AddMassTransit(busConfig =>
+{
+    //busConfig.SetKebabCaseEndpointNameFormatter();
+    busConfig.AddConsumer<ProcessAppointConsumer>();
+    busConfig.UsingRabbitMq((context, configurator) =>
+    {
+        configurator.Host(new Uri("rabbitmq://localhost/rabbit"), h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+        configurator.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 

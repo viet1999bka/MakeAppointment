@@ -1,7 +1,8 @@
- using Appointment.API.DI.Extensions;
+
 using Appointment.API.Migrations;
 using Appointment.API.Services;
 using Appointment.Services;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,8 +15,21 @@ builder.Services.AddGrpc();
 builder.Services.AddDbContext<AppointServiceDbContext>(option => option.UseOracle(builder.Configuration.GetConnectionString("OracleDBViet")));
 
 // Configure Masstransit
-builder.Services.AddConfigureMasstransitRabbitMq(builder.Configuration);
-builder.Services.AddMediatR();
+var assembly = typeof(Program).Assembly;
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(assembly));
+builder.Services.AddMassTransit(busConfig =>
+{
+    //busConfig.SetKebabCaseEndpointNameFormatter();
+    busConfig.UsingRabbitMq((context, configurator) =>
+    {
+        configurator.Host(new Uri("rabbitmq://localhost/rabbit"), h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+        configurator.ConfigureEndpoints(context);
+    });
+});
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
